@@ -26,31 +26,73 @@ func main() {
 			var email string
 			fmt.Scan(&email)
 			clients[len(clients)+1] = client{Nom: name, Email: email}
+			fmt.Println("Client ajouté avec succès! \n")
 		case 2:
 			fmt.Println("Liste des clients:")
-			for id, c := range clients {
-				fmt.Printf("ID: %d, Nom: %s, Email: %s\n", id, c.Nom, c.Email)
+
+			// Si liste vide
+			if len(clients) == 0 {
+				fmt.Println("Aucun client enregistré. Veuillez en ajouter un. \n")
+				continue
+			}
+
+			for id, client := range clients {
+				fmt.Printf("ID: %d, Nom: %s, Email: %s\n", id, client.Nom, client.Email)
 			}
 		case 3:
+
+			// Si liste vide
+			if len(clients) == 0 {
+				fmt.Println("Aucun client enregistré. Veuillez en ajouter un. \n")
+				continue
+			}
+
 			fmt.Println("ID du client à modifier:")
 			var id int
 			fmt.Scan(&id)
+
+			// Vérifie si le client existe
+			if _, exists := clients[id]; !exists {
+				fmt.Printf("Client avec l'ID %d non trouvé. \n", id)
+				continue
+			}
+
 			fmt.Println("Nouveau nom du client:")
 			var name string
 			fmt.Scan(&name)
 			fmt.Println("Nouvel email du client:")
 			var email string
 			fmt.Scan(&email)
+
+			clients[id] = client{Nom: name, Email: email}
+			fmt.Println("Client modifié avec succès! \n")
+
 		case 4:
+			// Si liste vide
+			if len(clients) == 0 {
+				fmt.Println("Aucun client enregistré. Veuillez en ajouter un. \n")
+				continue
+			}
+
 			fmt.Println("ID du client à supprimer:")
 			var id int
 			fmt.Scan(&id)
+			if _, exists := clients[id]; !exists {
+				fmt.Printf("Client avec l'ID %d non trouvé. \n", id)
+				continue
+			}
+
+			delete(clients, id)
+			fmt.Println("Client supprimé avec succès! \n")
+
 		case 5:
 			fmt.Println("Merci d'avoir utilisé Go CRM! A bientôt!")
 			return
 		default:
-			fmt.Println("Commande invalide, veuillez réessayer.")
+			fmt.Println("Commande invalide, veuillez réessayer. \n")
 		}
+
+		fmt.Println()
 	}
 }
 
