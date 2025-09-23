@@ -7,10 +7,10 @@ import (
 
 func main() {
 
-	clients := make(map[int]client)
+	contacts := make(map[int]*contact)
 
-	nameFlag := flag.String("name", "", "Nom du client")
-	mailFlag := flag.String("email", "", "Email du client")
+	nameFlag := flag.String("name", "", "Nom du contact")
+	mailFlag := flag.String("email", "", "Email du contact")
 	flag.Parse()
 
 	// Gestion des flags
@@ -19,69 +19,72 @@ func main() {
 		name := *nameFlag
 		email := *mailFlag
 
-		addClient(clients, name, email)
+		c := NewContact(name, email)
+		c.addcontact(contacts, c.Nom, c.Email)
 	}
 	for {
 		fmt.Println("Bienvenue sur Go CRM, que voulez-vous faire?")
-		fmt.Println("1. Ajouter un client")
-		fmt.Println("2. Lister les clients")
-		fmt.Println("3. Modifier un client")
-		fmt.Println("4. Supprimer un client")
+		fmt.Println("1. Ajouter un contact")
+		fmt.Println("2. Lister les contacts")
+		fmt.Println("3. Modifier un contact")
+		fmt.Println("4. Supprimer un contact")
 		fmt.Println("5. Quitter")
 
 		var choice int
 		fmt.Scan(&choice)
 		switch choice {
 		case 1:
-			fmt.Println("Nom du client:")
+			fmt.Println("Nom du contact:")
 			var name string
 			fmt.Scan(&name)
-			fmt.Println("Email du client:")
+			fmt.Println("Email du contact:")
 			var email string
 			fmt.Scan(&email)
-			addClient(clients, name, email)
+			c := NewContact(name, email)
+			c.addcontact(contacts, c.Nom, c.Email)
+
 		case 2:
-			listClients(clients)
+			listcontacts(contacts)
 		case 3:
-			if len(clients) == 0 {
-				fmt.Println("Aucun client enregistré. Veuillez en ajouter un. \n")
+			if len(contacts) == 0 {
+				fmt.Println("Aucun contact enregistré. Veuillez en ajouter un. \n")
 				continue
 			}
 
-			fmt.Println("ID du client à modifier:")
+			fmt.Println("ID du contact à modifier:")
 			var id int
 			fmt.Scan(&id)
 
-			// Vérifie si le client existe
-			if _, exists := clients[id]; !exists {
-				fmt.Printf("Client avec l'ID %d non trouvé. \n", id)
+			// Vérifie si le contact existe
+			if _, exists := contacts[id]; !exists {
+				fmt.Printf("contact avec l'ID %d non trouvé. \n", id)
 				continue
 			}
 
-			fmt.Println("Nouveau nom du client:")
+			fmt.Println("Nouveau nom du contact:")
 			var name string
 			fmt.Scan(&name)
-			fmt.Println("Nouvel email du client:")
+			fmt.Println("Nouvel email du contact:")
 			var email string
 			fmt.Scan(&email)
-
-			editClient(clients, id, name, email)
+			c := contact{Nom: name, Email: email}
+			c.editcontact(contacts, id, name, email)
 
 		case 4:
-			if len(clients) == 0 {
-				fmt.Println("Aucun client enregistré. Veuillez en ajouter un. \n")
+			if len(contacts) == 0 {
+				fmt.Println("Aucun contact enregistré. Veuillez en ajouter un. \n")
 				continue
 			}
-			fmt.Println("ID du client à supprimer:")
+			fmt.Println("ID du contact à supprimer:")
 			var id int
 			fmt.Scan(&id)
 
-			if _, exists := clients[id]; !exists {
-				fmt.Printf("Client avec l'ID %d non trouvé. \n", id)
+			if _, exists := contacts[id]; !exists {
+				fmt.Printf("contact avec l'ID %d non trouvé. \n", id)
 				continue
 			}
-
-			deleteClient(clients, id)
+			c := contact{}
+			c.deletecontact(contacts, id)
 
 		case 5:
 			fmt.Println("Merci d'avoir utilisé Go CRM! A bientôt!")
@@ -94,37 +97,44 @@ func main() {
 	}
 }
 
-type client struct {
+type contact struct {
 	Nom   string
 	Email string
 }
 
-func addClient(clients map[int]client, name string, email string) {
-	clients[len(clients)+1] = client{Nom: name, Email: email}
-	fmt.Println("Client ajouté avec succès! \n")
+func NewContact(nom string, email string) *contact {
+	return &contact{
+		Nom:   nom,
+		Email: email,
+	}
 }
 
-func listClients(clients map[int]client) {
-	fmt.Println("Liste des clients:")
+func (c contact) addcontact(contacts map[int]*contact, name string, email string) {
+	contacts[len(contacts)+1] = &contact{Nom: name, Email: email}
+	fmt.Println("contact ajouté avec succès! \n")
+}
+
+func listcontacts(contacts map[int]*contact) {
+	fmt.Println("Liste des contacts:")
 
 	// Si liste vide
-	if len(clients) == 0 {
-		fmt.Println("Aucun client enregistré. Veuillez en ajouter un. \n")
+	if len(contacts) == 0 {
+		fmt.Println("Aucun contact enregistré. Veuillez en ajouter un. \n")
 
 	}
 
-	for id, client := range clients {
-		fmt.Printf("ID: %d, Nom: %s, Email: %s\n", id, client.Nom, client.Email)
+	for id, contact := range contacts {
+		fmt.Printf("ID: %d, Nom: %s, Email: %s\n", id, contact.Nom, contact.Email)
 	}
 }
-func editClient(clients map[int]client, id int, name string, email string) {
+func (c contact) editcontact(contacts map[int]*contact, id int, name string, email string) {
 
-	clients[id] = client{Nom: name, Email: email}
-	fmt.Println("Client modifié avec succès! \n")
+	contacts[id] = &contact{Nom: name, Email: email}
+	fmt.Println("contact modifié avec succès! \n")
 }
 
-func deleteClient(clients map[int]client, id int) {
+func (c contact) deletecontact(contacts map[int]*contact, id int) {
 
-	delete(clients, id)
-	fmt.Println("Client supprimé avec succès! \n")
+	delete(contacts, id)
+	fmt.Println("contact supprimé avec succès! \n")
 }
